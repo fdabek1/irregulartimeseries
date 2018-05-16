@@ -33,4 +33,8 @@ class ARIMA(Model):
         # self.model.fit(self.x_train, self.y_train)
 
     def predict(self):
-        return self.model.predict_in_sample(), self.model.predict(n_periods=len(self.analysis.y_test))
+        if self.use_features:
+            return self.model.predict_in_sample(exog=self.x_train), self.model.predict(exog=self.x_test, n_periods=len(
+                self.analysis.y_test))
+        else:
+            return self.model.predict_in_sample(), self.model.predict(n_periods=len(self.analysis.y_test))
