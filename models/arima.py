@@ -30,11 +30,10 @@ class ARIMA(Model):
 
     def train(self):
         pass
-        # self.model.fit(self.x_train, self.y_train)
 
     def predict(self):
         if self.use_features:
-            return self.model.predict_in_sample(exog=self.x_train), self.model.predict(exog=self.x_test, n_periods=len(
-                self.analysis.y_test))
+            return self.model.predict_in_sample(exogenous=self.analysis.x_train), \
+                   self.model.predict(exogenous=self.analysis.x_test, n_periods=len(self.analysis.y_test))
         else:
             return self.model.predict_in_sample(), self.model.predict(n_periods=len(self.analysis.y_test))
