@@ -5,6 +5,9 @@ The notebooks are listed in the root of the project at the moment.
 ### 00-DataOverview
 Contains basic visualization of the data.
 
+### 00-ModelResults
+Aggregates the model results across all notebooks and visualizes them.
+
 ### 01-Basic
 Uses the data on all models to get a base performance metric.
 
