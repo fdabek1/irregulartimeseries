@@ -26,8 +26,8 @@ Uses <actual_min_temp, actual_max_temp, actual_precipitation> as the feature vec
 
 
 
-### 04-Removal
-These notebooks completely remove time points from the data. 
+### 04-Remove
+These notebooks completely remove time points from the data.  The number at the end of the title represents the percent of data that will be removed. 
 
 
 ### 05-Missing
