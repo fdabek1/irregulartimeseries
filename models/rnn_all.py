@@ -49,7 +49,7 @@ class RNNAll(Model):
         test_output = self.model.predict(self.x_test).flatten()
 
         # Find where x is not set to the mask value
-        indices = np.where(self.x_test.flatten() != self.mask_value)
+        indices = np.where(self.x_test[:, :, 1].flatten() != self.mask_value)
 
         # Get the output for those locations
         test_output = test_output[indices]

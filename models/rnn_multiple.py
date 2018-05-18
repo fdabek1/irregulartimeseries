@@ -50,7 +50,7 @@ class RNNMultiple(Model):
             output = self.model.predict(x).flatten()
 
             # Find where x is not set to the mask value
-            indices = np.where(x.flatten() != self.mask_value)
+            indices = np.where(x[:, :, 1].flatten() != self.mask_value)
 
             # Get the output for those locations
             output = output[indices]

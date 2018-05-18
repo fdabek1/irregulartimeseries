@@ -90,15 +90,15 @@ class Analysis:
 
         return x
 
-    def run_model(self, model, model_name=None):
+    def run_model(self, model, name=None):
         model.transform()
         model.build_model()
         model.train()
 
         predicted_train, predicted_test = model.predict()
         error_train, error_test = self.compute_error(predicted_train, predicted_test)
-        if self.title is not None and model_name is not None:
-            self.log_results(model_name, error_train, error_test)
+        if self.title is not None and name is not None:
+            self.log_result(name, error_train, error_test)
 
         self.visualize_data(predicted_train, predicted_test)
 
@@ -119,13 +119,17 @@ class Analysis:
 
         return error_train, error_test
 
-    def log_results(self, model_name, error_train, error_test):
-        self.results = self.results.append({'model': model_name, 'train': error_train, 'test': error_test})
+    def log_result(self, model_name, error_train, error_test):
+        self.results = self.results.append({
+            'model': model_name,
+            'train': error_train,
+            'test': error_test
+        }, ignore_index=True)
         self.results.to_csv('results/' + self.title + '.csv', index=False)
 
     def setup_results(self):
         if self.title is not None:
-            self.results = pd.DataFrame(columns=['model', 'train', 'test'])
+            self.results = pd.DataFrame()
 
     def visualize_data(self, predicted_train=None, predicted_test=None, show_raw=True, show_diff=False):
         if show_raw:

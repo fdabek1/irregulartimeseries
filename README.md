@@ -9,19 +9,23 @@ Contains basic visualization of the data.
 Uses the data on all models to get a base performance metric.
 
 
-### 02-Features
+### 03-Features
 These notebooks try to provide different features as input to the models.
 
 > n stands for normalized feature input vectors
 > p stands for appending the predictor value into the feature vector.
 
-#### 02-FeaturesA
+#### 03-FeaturesDate
 Uses <YYYY, MM, DD> as the feature vector.
 
-#### 02-FeaturesB
+#### 03-FeaturesOther
 Uses <actual_min_temp, actual_max_temp, actual_precipitation> as the feature vector.
 
 
 
-### 03-Features
-These notebooks try to provide different features as input to the models.
+### 04-Removal
+These notebooks completely remove time points from the data. 
+
+
+### 05-Missing
+These notebooks mark time points as being missing.
