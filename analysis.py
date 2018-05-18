@@ -13,16 +13,20 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 class Analysis:
-    def __init__(self, data_type, normalize=False, missing_type=None, missing_percent=0.2, missing_seed=3,
+    def __init__(self, data_type, title=None, normalize=False, missing_type=None, missing_percent=0.2, missing_seed=3,
                  logger=print):
         self.data_type = data_type
+        self.title = title  # The title of the analysis to be used in logging the results
         self.data = None
-        self.logger = logger
+        self.logger = logger  # How to print out any messages (to notebook or to console)
         self.normalize = normalize
 
         self.missing_type = missing_type
         self.missing_percent = missing_percent
         self.missing_seed = missing_seed
+
+        self.results = None
+        self.setup_results()
 
         self.num_train = -1
 
@@ -86,13 +90,16 @@ class Analysis:
 
         return x
 
-    def run_model(self, model):
+    def run_model(self, model, model_name=None):
         model.transform()
         model.build_model()
         model.train()
 
         predicted_train, predicted_test = model.predict()
-        self.compute_error(predicted_train, predicted_test)
+        error_train, error_test = self.compute_error(predicted_train, predicted_test)
+        if self.title is not None and model_name is not None:
+            self.log_results(model_name, error_train, error_test)
+
         self.visualize_data(predicted_train, predicted_test)
 
     def compute_error(self, predicted_train, predicted_test):
@@ -109,6 +116,16 @@ class Analysis:
 
         self.logger('Train Error: ' + str(error_train) + '  Num NaN: ' + str(len(self.y_train) - len(indices_train)))
         self.logger('Test Error: ' + str(error_test) + '    Num NaN: ' + str(len(self.y_test) - len(indices_test)))
+
+        return error_train, error_test
+
+    def log_results(self, model_name, error_train, error_test):
+        self.results = self.results.append({'model': model_name, 'train': error_train, 'test': error_test})
+        self.results.to_csv('results/' + self.title + '.csv', index=False)
+
+    def setup_results(self):
+        if self.title is not None:
+            self.results = pd.DataFrame(columns=['model', 'train', 'test'])
 
     def visualize_data(self, predicted_train=None, predicted_test=None, show_raw=True, show_diff=False):
         if show_raw:
