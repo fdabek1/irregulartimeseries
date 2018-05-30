@@ -13,13 +13,16 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 
 class Analysis:
-    def __init__(self, data_type, title=None, normalize=False, missing_type=None, missing_percent=0.2, missing_seed=3,
+    def __init__(self, data_type, title=None, normalize=False, percent_train=0.8, missing_type=None,
+                 missing_percent=0.2, missing_seed=3,
                  logger=print):
         self.data_type = data_type
         self.title = title  # The title of the analysis to be used in logging the results
         self.data = None
         self.logger = logger  # How to print out any messages (to notebook or to console)
         self.normalize = normalize
+
+        self.percent_train = percent_train
 
         self.missing_type = missing_type
         self.missing_percent = missing_percent
@@ -72,7 +75,7 @@ class Analysis:
             x = self.normalize_features(x)
 
         data_len = len(self.data)
-        num_train = int(round(data_len * 0.8))
+        num_train = int(data_len * self.percent_train)
         self.num_train = num_train
 
         self.logger('Number of train data points: ' + str(num_train))
