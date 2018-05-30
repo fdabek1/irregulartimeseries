@@ -42,6 +42,8 @@ class Analysis:
 
         if self.data_type == 'weather':
             self.data = pd.read_csv(folder + '/data/weather/KPHL.csv', parse_dates=['date'])
+        elif self.data_type == 'passengers':
+            self.data = pd.read_csv(folder + '/data/passengers/data.csv', usecols=[1], skipfooter=3)
         else:
             raise Exception('Invalid data type.')
 
