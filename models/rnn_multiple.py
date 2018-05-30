@@ -40,7 +40,7 @@ class RNNMultiple(Model):
         pass
 
     def train(self):
-        self.model.fit(self.x_train, self.y_train, epochs=10, validation_data=(self.x_test, self.y_test),
+        self.model.fit(self.x_train, self.y_train, epochs=20, validation_data=(self.x_test, self.y_test),
                        batch_size=10,
                        verbose=2)
 
@@ -50,7 +50,7 @@ class RNNMultiple(Model):
             output = self.model.predict(x).flatten()
 
             # Find where x is not set to the mask value
-            indices = np.where(x[:, :, 1].flatten() != self.mask_value)
+            indices = np.where(x[:, :, 0].flatten() != self.mask_value)
 
             # Get the output for those locations
             output = output[indices]
