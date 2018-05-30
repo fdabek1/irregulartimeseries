@@ -3,8 +3,8 @@ from pyramid.arima import auto_arima
 
 
 class ARIMA(Model):
-    def __init__(self, analysis, use_features=True):
-        super().__init__(analysis)
+    def __init__(self, use_features=True, **kwargs):
+        super().__init__(**kwargs)
 
         self.use_features = use_features
 

@@ -3,8 +3,8 @@ import numpy as np
 
 
 class ChunkModel(Model):
-    def __init__(self, analysis, num_days):
-        super().__init__(analysis)
+    def __init__(self, num_days, **kwargs):
+        super().__init__(**kwargs)
 
         self.num_days = num_days
 

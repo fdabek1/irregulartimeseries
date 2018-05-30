@@ -30,5 +30,5 @@ nn.add(layers.TimeDistributed(layers.Dense(1, activation='tanh')))
 # nn.add(layers.TimeDistributed(layers.Dense(1, activation='linear')))
 nn.compile(loss='mse', optimizer='adam')
 
-model = RNNAll(analysis, nn)
+model = RNNAll(nn, analysis=analysis, fit_config={'epochs': 30})
 analysis.run_model(model, name='RNNAll')

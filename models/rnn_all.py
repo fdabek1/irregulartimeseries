@@ -5,8 +5,8 @@ import numpy as np
 
 # This class has only one sample of the entire dataset
 class RNNAll(Model):
-    def __init__(self, analysis, model):
-        super().__init__(analysis)
+    def __init__(self, model, **kwargs):
+        super().__init__(**kwargs)
         self.model = model
         self.scaler = MinMaxScaler()
 
@@ -39,9 +39,8 @@ class RNNAll(Model):
         pass
 
     def train(self):
-        self.model.fit(self.x_train, self.y_train, epochs=30, validation_data=(self.x_test, self.y_test),
-                       batch_size=10,
-                       verbose=2)
+        self.model.fit(self.x_train, self.y_train, validation_data=(self.x_test, self.y_test), verbose=2,
+                       **self.fit_config)
 
     def predict(self):
         # Run the model

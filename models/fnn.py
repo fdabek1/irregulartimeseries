@@ -4,8 +4,8 @@ import numpy as np
 
 
 class FNN(ChunkModel):
-    def __init__(self, analysis, model, num_days=5):
-        super().__init__(analysis, num_days)
+    def __init__(self, model, **kwargs):
+        super().__init__(**kwargs)
         self.model = model
         self.scaler = MinMaxScaler()
 
@@ -21,8 +21,8 @@ class FNN(ChunkModel):
         pass
 
     def train(self):
-        self.model.fit(self.x_train, self.y_train, epochs=20, validation_data=(self.x_test, self.y_test), batch_size=10,
-                       verbose=2)
+        self.model.fit(self.x_train, self.y_train, validation_data=(self.x_test, self.y_test), verbose=2,
+                       **self.fit_config)
 
     def predict(self):
         return self.predict_transform(self.scaler.inverse_transform(self.model.predict(self.x_train)).flatten(),

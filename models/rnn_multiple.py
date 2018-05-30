@@ -1,21 +1,19 @@
-from models.model import Model
-from data.transformations import normalize_y
+from models.chunk_model import ChunkModel
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
 
 # This class uses each timestep's output as a prediction.
-class RNNMultiple(Model):
-    def __init__(self, analysis, model, num_days=5):
-        super().__init__(analysis)
+class RNNMultiple(ChunkModel):
+    def __init__(self, model, **kwargs):
+        super().__init__(**kwargs)
         self.model = model
         self.scaler = MinMaxScaler()
-
-        self.num_days = num_days
 
         self.train_add = -1
         self.test_add = -1
 
+    # Override the way that ChunkModel chunks everything together
     def transform(self):
         num_features = len(self.analysis.features)
 
@@ -42,9 +40,8 @@ class RNNMultiple(Model):
         pass
 
     def train(self):
-        self.model.fit(self.x_train, self.y_train, epochs=20, validation_data=(self.x_test, self.y_test),
-                       batch_size=10,
-                       verbose=2)
+        self.model.fit(self.x_train, self.y_train, validation_data=(self.x_test, self.y_test), verbose=2,
+                       **self.fit_config)
 
     def predict(self):
         def run_clean(x, num_extra):

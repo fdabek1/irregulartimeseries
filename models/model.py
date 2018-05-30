@@ -1,7 +1,12 @@
 class Model:
-    def __init__(self, analysis):
+    def __init__(self, analysis=None, fit_config=None):
         self.analysis = analysis
         self.model = None
+
+        # Set the default fit_config if it does not exist
+        # This currently is only used for RNN classes
+        # Could be abstracted to work for all if needed in the future.
+        self.fit_config = {'batch_size': 1} if fit_config is None else fit_config
 
         self.x_train = None
         self.y_train = None
