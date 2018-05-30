@@ -1,6 +1,7 @@
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+from math import sqrt
 import pandas as pd
 import numpy as np
 import random
@@ -46,7 +47,8 @@ class Analysis:
         if self.data_type == 'weather':
             self.data = pd.read_csv(folder + '/data/weather/KPHL.csv', parse_dates=['date'])
         elif self.data_type == 'passengers':
-            self.data = pd.read_csv(folder + '/data/passengers/data.csv', usecols=[1], skipfooter=3)
+            self.data = pd.read_csv(folder + '/data/passengers/international-airline-passengers.csv', engine='python',
+                                    usecols=[1], skipfooter=3)
         else:
             raise Exception('Invalid data type.')
 
@@ -82,8 +84,8 @@ class Analysis:
         self.logger('Number of test data points: ' + str(data_len - num_train))
 
         # Split into training and test data
-        self.x_train = x[:num_train].as_matrix()
-        self.y_train = y[:num_train].as_matrix()
+        self.x_train = x[:num_train - 1].as_matrix()
+        self.y_train = y[:num_train - 1].as_matrix()
         self.x_test = x[num_train:].as_matrix()
         self.y_test = y[num_train:].as_matrix()
 
@@ -116,11 +118,15 @@ class Analysis:
         indices_test = np.argwhere(~np.isnan(predicted_test)).flatten()
 
         # Find errors ignoring NaN's
-        error_train = mean_absolute_error(self.y_train[indices_train], predicted_train[indices_train])
-        error_test = mean_absolute_error(self.y_test[indices_test], predicted_test[indices_test])
+        error_train = sqrt(mean_squared_error(self.y_train[indices_train], predicted_train[indices_train]))
+        error_test = sqrt(mean_squared_error(self.y_test[indices_test], predicted_test[indices_test]))
 
-        self.logger('Train Error: ' + str(error_train) + '  Num NaN: ' + str(len(self.y_train) - len(indices_train)))
-        self.logger('Test Error: ' + str(error_test) + '    Num NaN: ' + str(len(self.y_test) - len(indices_test)))
+        # Find number of NaN's (missing predictions).  Applicable to chunk models
+        nan_train = len(self.y_train) - len(indices_train)
+        nan_test = len(self.y_test) - len(indices_test)
+
+        self.logger('Train Error (RMSE): ' + str(error_train) + '  Num NaN: ' + str(nan_train))
+        self.logger('Test Error (RMSE): ' + str(error_test) + '    Num NaN: ' + str(nan_test))
 
         return error_train, error_test
 
