@@ -21,7 +21,7 @@ class FNN(ChunkModel):
         pass
 
     def train(self):
-        self.model.fit(self.x_train, self.y_train, epochs=10, validation_data=(self.x_test, self.y_test), batch_size=10,
+        self.model.fit(self.x_train, self.y_train, epochs=20, validation_data=(self.x_test, self.y_test), batch_size=10,
                        verbose=2)
 
     def predict(self):

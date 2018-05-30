@@ -14,6 +14,7 @@ class RNNAll(Model):
         self.mask_value = mask_value
 
     def transform(self):
+        self.mask_value = 0
         self.x_train = self.analysis.x_train
         self.y_train = self.analysis.y_train
         self.x_test = self.analysis.x_test
@@ -22,8 +23,8 @@ class RNNAll(Model):
         # Add dummy values to the test data so that it
         num_features = len(self.analysis.features)
         diff = len(self.x_train) - len(self.x_test)
-        self.x_test = np.concatenate((self.x_test, [[self.mask_value] * num_features] * diff))
-        self.y_test = np.concatenate((self.y_test, [self.mask_value] * diff))
+        self.x_test = np.concatenate(([[self.mask_value] * num_features] * diff, self.x_test))
+        self.y_test = np.concatenate(([self.mask_value] * diff, self.y_test))
 
         # Normalize the y variable between 0 and 1
         self.scaler.fit(np.concatenate((self.y_train, self.y_test)).reshape((-1, 1)))
@@ -40,7 +41,7 @@ class RNNAll(Model):
         pass
 
     def train(self):
-        self.model.fit(self.x_train, self.y_train, epochs=10, validation_data=(self.x_test, self.y_test),
+        self.model.fit(self.x_train, self.y_train, epochs=30, validation_data=(self.x_test, self.y_test),
                        batch_size=10,
                        verbose=2)
 
@@ -49,7 +50,7 @@ class RNNAll(Model):
         test_output = self.model.predict(self.x_test).flatten()
 
         # Find where x is not set to the mask value
-        indices = np.where(self.x_test[:, :, 1].flatten() != self.mask_value)
+        indices = np.where(self.x_test[:, :, 0].flatten() != self.mask_value)
 
         # Get the output for those locations
         test_output = test_output[indices]
