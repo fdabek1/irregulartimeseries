@@ -6,24 +6,26 @@ import numpy as np
 
 # This class uses each timestep's output as a prediction.
 class RNNMultiple(Model):
-    def __init__(self, analysis, model, num_days=5, mask_value=None):
+    def __init__(self, analysis, model, num_days=5):
         super().__init__(analysis)
         self.model = model
         self.scaler = MinMaxScaler()
 
         self.num_days = num_days
-        self.mask_value = mask_value
+
+        self.train_add = -1
+        self.test_add = -1
 
     def transform(self):
         num_features = len(self.analysis.features)
 
-        train_add = self.num_days - (len(self.analysis.x_train) % self.num_days)
-        self.x_train = np.concatenate((self.analysis.x_train, (np.ones((train_add, num_features)) * self.mask_value)))
-        self.y_train = np.concatenate((self.analysis.y_train, (np.ones((train_add,)) * self.mask_value)))
+        self.train_add = self.num_days - (len(self.analysis.x_train) % self.num_days)
+        self.x_train = np.concatenate((self.analysis.x_train, (np.ones((self.train_add, num_features)) * 0)))
+        self.y_train = np.concatenate((self.analysis.y_train, (np.ones((self.train_add,)) * 0)))
 
-        test_add = self.num_days - (len(self.analysis.x_test) % self.num_days)
-        self.x_test = np.concatenate((self.analysis.x_test, (np.ones((test_add, num_features)) * self.mask_value)))
-        self.y_test = np.concatenate((self.analysis.y_test, (np.ones((test_add,)) * self.mask_value)))
+        self.test_add = self.num_days - (len(self.analysis.x_test) % self.num_days)
+        self.x_test = np.concatenate((self.analysis.x_test, (np.ones((self.test_add, num_features)) * 0)))
+        self.y_test = np.concatenate((self.analysis.y_test, (np.ones((self.test_add,)) * 0)))
 
         self.x_train = self.x_train.reshape((len(self.x_train) // self.num_days, self.num_days, num_features))
         self.y_train = self.y_train.reshape((len(self.y_train) // self.num_days, self.num_days, 1))
@@ -45,19 +47,16 @@ class RNNMultiple(Model):
                        verbose=2)
 
     def predict(self):
-        def run_clean(x):
+        def run_clean(x, num_extra):
             # Run the model
             output = self.model.predict(x).flatten()
 
-            # Find where x is not set to the mask value
-            indices = np.where(x[:, :, 0].flatten() != self.mask_value)
-
-            # Get the output for those locations
-            output = output[indices]
+            # Exclude extra predictions
+            output = output[:-1 * num_extra]
 
             # Scale back to original values
             output = self.scaler.inverse_transform(output.reshape(-1, 1)).flatten()
 
             return output
 
-        return run_clean(self.x_train), run_clean(self.x_test)
+        return run_clean(self.x_train, self.train_add), run_clean(self.x_test, self.test_add)

@@ -5,16 +5,14 @@ import numpy as np
 
 # This class has only one sample of the entire dataset
 class RNNAll(Model):
-    def __init__(self, analysis, model, num_days=5, mask_value=None):
+    def __init__(self, analysis, model):
         super().__init__(analysis)
         self.model = model
         self.scaler = MinMaxScaler()
 
-        self.num_days = num_days
-        self.mask_value = mask_value
+        self.test_add = -1
 
     def transform(self):
-        self.mask_value = 0
         self.x_train = self.analysis.x_train
         self.y_train = self.analysis.y_train
         self.x_test = self.analysis.x_test
@@ -22,9 +20,9 @@ class RNNAll(Model):
 
         # Add dummy values to the test data so that it
         num_features = len(self.analysis.features)
-        diff = len(self.x_train) - len(self.x_test)
-        self.x_test = np.concatenate(([[self.mask_value] * num_features] * diff, self.x_test))
-        self.y_test = np.concatenate(([self.mask_value] * diff, self.y_test))
+        self.test_add = len(self.x_train) - len(self.x_test)
+        self.x_test = np.concatenate((self.x_test, [[0] * num_features] * self.test_add))
+        self.y_test = np.concatenate((self.y_test, [0] * self.test_add))
 
         # Normalize the y variable between 0 and 1
         self.scaler.fit(np.concatenate((self.y_train, self.y_test)).reshape((-1, 1)))
@@ -49,11 +47,8 @@ class RNNAll(Model):
         # Run the model
         test_output = self.model.predict(self.x_test).flatten()
 
-        # Find where x is not set to the mask value
-        indices = np.where(self.x_test[:, :, 0].flatten() != self.mask_value)
-
-        # Get the output for those locations
-        test_output = test_output[indices]
+        # Exclude extra predictions
+        test_output = test_output[:-1 * self.test_add]
 
         # Scale back to original values
         test_output = self.scaler.inverse_transform(test_output.reshape(-1, 1)).flatten()

@@ -5,12 +5,10 @@ import numpy as np
 
 # This class only takes the final output as a prediction
 class RNNSingle(ChunkModel):
-    def __init__(self, analysis, model, num_days=5, mask_value=None):
+    def __init__(self, analysis, model, num_days=5):
         super().__init__(analysis, num_days)
         self.model = model
         self.scaler = MinMaxScaler()
-
-        self.mask_value = mask_value
 
     def transform(self):
         super().transform()
