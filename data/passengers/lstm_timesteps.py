@@ -13,12 +13,10 @@ from sklearn.metrics import mean_squared_error
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
-    for i in range(len(dataset) - look_back): # BY FILIP: Removed -1 from the end
-        # print(i, i+look_back)
+    for i in range(len(dataset) - look_back):  # BY FILIP: Removed -1 from the end
         a = dataset[i:(i + look_back), 0]
         dataX.append(a)
         dataY.append(dataset[i + look_back, 0])
-    # exit()
     return numpy.array(dataX), numpy.array(dataY)
 
 
@@ -30,26 +28,15 @@ dataset = dataframe.values
 dataset = dataset.astype('float32')
 # normalize the dataset
 scaler = MinMaxScaler(feature_range=(0, 1))
-# dataset = scaler.fit_transform(dataset)
+dataset = scaler.fit_transform(dataset)
 # split into train and test sets
 train_size = int(len(dataset) * 0.67)
 test_size = len(dataset) - train_size
 train, test = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
-# print('train_size', train_size)
-# print('train', train.flatten())
-# print('test_size', test_size)
-# print('test', test.flatten())
-# exit()
 # reshape into X=t and Y=t+1
 look_back = 3
 trainX, trainY = create_dataset(train, look_back)
 testX, testY = create_dataset(test, look_back)
-print('trainX', trainX.shape)
-print(trainY)
-print('---')
-print('testY', testY.shape)
-print(testY)
-exit()
 # reshape input to be [samples, time steps, features]
 trainX = numpy.reshape(trainX, (trainX.shape[0], trainX.shape[1], 1))
 testX = numpy.reshape(testX, (testX.shape[0], testX.shape[1], 1))

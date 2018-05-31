@@ -20,15 +20,15 @@ NUM_DAYS = 3
 NUM_FEATURES = len(analysis.features)
 
 from keras.models import Sequential
+from keras import optimizers
 from keras import layers
+np.random.seed(7)
 
 nn = Sequential()
-nn.add(layers.LSTM(50, activation='tanh', input_shape=(len(analysis.x_train), NUM_FEATURES), return_sequences=True))
+nn.add(layers.LSTM(4, input_shape=(NUM_DAYS, NUM_FEATURES)))
 
-nn.add(layers.TimeDistributed(layers.Dense(10, activation='relu')))
-nn.add(layers.TimeDistributed(layers.Dense(1, activation='tanh')))
-# nn.add(layers.TimeDistributed(layers.Dense(1, activation='linear')))
-nn.compile(loss='mse', optimizer='adam')
+nn.add(layers.Dense(1))
+nn.compile(loss='mean_squared_error', optimizer='adam')
 
-model = RNNAll(nn, analysis=analysis, fit_config={'epochs': 50, 'shuffle': False})
-analysis.run_model(model, name='RNNAll')
+model = RNNSingle(analysis=analysis, model=nn, num_days=NUM_DAYS)
+analysis.run_model(model, name='LSTMSingle')
