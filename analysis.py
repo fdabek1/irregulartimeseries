@@ -136,7 +136,7 @@ class Analysis:
             'train': error_train,
             'test': error_test
         }, ignore_index=True)
-        self.results.to_csv('results/' + self.title + '.csv', index=False)
+        self.results.to_csv('results/' + self.data_type + '/' + self.title + '.csv', index=False)
 
     def setup_results(self):
         if self.title is not None:
