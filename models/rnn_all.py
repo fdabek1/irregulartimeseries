@@ -1,5 +1,6 @@
 from models.model import Model
 from sklearn.preprocessing import MinMaxScaler
+from .nn_chart_helper import draw_nn_log
 import numpy as np
 
 
@@ -39,8 +40,9 @@ class RNNAll(Model):
         pass
 
     def train(self):
-        self.model.fit(self.x_train, self.y_train, validation_data=(self.x_test, self.y_test), verbose=2,
-                       **self.fit_config)
+        history = self.model.fit(self.x_train, self.y_train, validation_data=(self.x_test, self.y_test), verbose=0,
+                                 **self.fit_config)
+        draw_nn_log(history)
 
     def predict(self):
         # Run the model
